@@ -39,7 +39,7 @@ export default function SideBar({ isOpen, setIsOpen }) {
           >
             <div className="flex items-center space-x-3">
               <Users size={20} />
-              {isOpen && <span>Employees</span>}
+              {isOpen && <span>Leave Management</span>}
             </div>
             {isOpen &&
               (showEmployeeMenu ? (

@@ -13,6 +13,7 @@ export default function SideBar({ isOpen, setIsOpen }) {
   const [showEmployeeMenu, setShowEmployeeMenu] = useState(false);
   const [showTransfersMenu, setShowTransfersMenu] = useState(false);
   const [showLeaveMenu, setShowLeaveMenu] = useState(false);
+  const [showDepartmentMenu, setShowDepartmentMenu] = useState(false);
 
   return (
     <div
@@ -111,10 +112,38 @@ export default function SideBar({ isOpen, setIsOpen }) {
               ))}
           </div>
 
+          {/*Department*/}
+          <div className="space-y-1">
+            <div
+              className="flex items-center justify-between p-2 hover:bg-blue-700 rounded cursor-pointer"
+              onClick={() => setShowDepartmentMenu(!showDepartmentMenu)}
+            >
+              <div className="flex items-center space-x-3">
+                <Repeat size={20} />
+                {isOpen && <span>Departments</span>}
+              </div>
+              {isOpen &&
+                (showDepartmentMenu ? (
+                  <ChevronUp size={16} />
+                ) : (
+                  <ChevronDown size={16} />
+                ))}
+            </div>
+
+            {showDepartmentMenu && isOpen && (
+              <div className="ml-8 space-y-1 transition-all duration-300">
+                <DropdownLink
+                  text="Manage Department"
+                  to={"/dashboard/departmentlist"}
+                />
+              </div>
+            )}
+          </div>
+
           {showLeaveMenu && isOpen && (
             <div className="ml-8 space-y-1 transition-all duration-300">
               <DropdownLink
-                text="LLeave Mnagement"
+                text="Leave Mnagement"
                 to={"/dashboard/transfers"}
               />
             </div>

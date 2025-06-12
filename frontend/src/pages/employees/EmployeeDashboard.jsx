@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import SideBar from "../../components/admin/dashboard/SideBar";
-import Navbar from "../../components/admin/dashboard/Navbar";
+import SideBar from "../../components/employees/dashboard/SideBar";
+import Navbar from "../../components/employees/dashboard/Navbar";
 
-function Dashboard() {
+function EmployeeDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
@@ -24,7 +24,7 @@ function Dashboard() {
         {/* Content */}
         <main className="flex-1 bg-gray-50 p-6 overflow-y-auto">
           <h1 className="text-3xl font-bold text-gray-800 mb-4">
-            Employye Dashboard
+            Employee Dashboard
           </h1>
           {/* Example: Grid cards */}
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -47,4 +47,4 @@ function Card({ title, count }) {
   );
 }
 
-export default Dashboard;
+export default EmployeeDashboard;
