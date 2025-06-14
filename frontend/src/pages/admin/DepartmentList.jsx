@@ -6,14 +6,23 @@ import DepartmentData from "../../components/admin/DepartmentData";
 function DepartmentList() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [departmentName, setDepartmentName] = useState("");
+  const [department, setDepartment] = useState({
+    department_name: "",
+    department_code: "",
+    department_description: "",
+    budget: "",
+    manager_id: "",
+  });
 
+  const handleChange = (e) => {
+    setDepartment({
+      ...department,
+      [e.target.name]: e.target.value,
+    });
+  };
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("New department:", departmentName);
     setIsModalOpen(false);
-    setDepartmentName("");
-    // You can add backend logic here
   };
 
   return (
@@ -51,9 +60,51 @@ function DepartmentList() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <input
                 type="text"
-                value={departmentName}
-                onChange={(e) => setDepartmentName(e.target.value)}
+                value={department.department_name}
+                name="department_name"
+                onChange={handleChange}
                 placeholder="Department name"
+                required
+                className="w-full border border-gray-300 p-2 rounded"
+              />
+              <input
+                type="text"
+                value={department.department_code}
+                name="department_code"
+                onChange={handleChange}
+                placeholder="Department code"
+                required
+                className="w-full border border-gray-300 p-2 rounded"
+              />
+              <input
+                type="number"
+                value={department.budget}
+                name="budget"
+                onChange={handleChange}
+                placeholder="budget"
+                required
+                className="w-full border border-gray-300 p-2 rounded"
+              />
+              <select
+                name=""
+                className="w-full border border-gray-300 p-2 rounded"
+                id=""
+              >
+                <option value="" name="manager_id" onChange={handleChange}>
+                  Select Department Head
+                </option>
+                <option value="1">John Doe</option>
+                <option value="2">Jane Smith</option>
+                <option value="3">Alice Johnson</option>
+                <option value="4">Bob Brown</option>
+              </select>
+              <textarea
+                type="text"
+                value={department.department_description}
+                name="department_description"
+                onChange={handleChange}
+                rows="3"
+                placeholder="Department Description"
                 required
                 className="w-full border border-gray-300 p-2 rounded"
               />
