@@ -65,6 +65,22 @@ module.exports = (sequelize) => {
     last_login: {
       type: DataTypes.DATE,
       allowNull: true
+    },
+    user_image: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    gender: {
+      type: DataTypes.ENUM('male', 'female', 'other'),
+      allowNull: false
+    },
+    date_of_birth: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
+    },
+    hire_date: {
+      type: DataTypes.DATEONLY,
+      allowNull: false
     }
   }, {
     tableName: 'users',

@@ -1,0 +1,582 @@
+/*********************** GENERAL ERROR STRUCTURE ********************/
+
+All error responses follow this structure:
+
+    {
+      "success": false,
+      "error": "Client Error" | "Server Error" | "Validation Error" | "Unauthorized" | "Forbidden",
+      "message": "Error message here",
+      // (optional, only in development)
+      "stack": "...stack trace..."
+    }
+
+Validation errors:
+    {
+      "success": false,
+      "error": "Validation Error",
+      "details": {
+        "field": "error message",
+        ...
+      }
+    }
+
+
+Creating accounts without authentication (For test/development purpose)
+
+# POST /api/auth/secret-admin
+  "request": {
+      "username": "admin.admin",
+      "email": "admin@hrms.com",
+      "password": "SecurePass@123",
+      "first_name": "Mr",
+      "last_name": "Admin",
+      "role": "admin",
+      "department_id": 99,
+      "employment_type": "full-time",
+      "salary": 50000,
+      "phone": "+1234567890",
+      "address": "123 Main St",
+      "user_image": "default_profile.png",
+      "gender": "female",
+      "date_of_birth": "07-09-2002"
+    }
+    "response": {
+  "success": true,
+  "data": {
+    "user_id": 14,
+    "username": "admin.admin",
+    "email": "admin@hrms.com",
+    "role": "admin",
+    "department_id": 99,
+    "is_active": true
+  },
+  "message": "Admin user created successfully"
+}
+
+
+
+/*********************** api/auth ********************/
+
+# POST /api/auth/register  [Admin only]
+    "request": {
+      "username": "john.doe",
+      "email": "john.doe@company.com",
+      "password": "SecurePass123!",
+      "first_name": "John",
+      "last_name": "Doe",
+      "role": "employee",
+      "department_id": 1,
+      "employment_type": "full-time",
+      "salary": 50000,
+      "phone": "+1234567890",
+      "address": "123 Main St",
+      "user_image": "default_profile.png",
+      "gender": "male",
+      "date_of_birth": "07-09-2002",
+    }
+    "response": {
+      "success": true,
+      "data": {
+        "user_id": 101,
+        "username": "john.doe",
+        "email": "john.doe@company.com",
+        "role": "employee",
+        "department_id": 1,
+        "is_active": true
+      },
+      "message": "User registered successfully"
+    }
+
+# POST /api/auth/login
+    "request": {
+      "username": "employee@hrms.com",
+      "password": "SecurePass@123"
+    }
+    "response": {
+      "success": true,
+      "data": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxNSwidXNlcm5hbWUiOiJlbXBsb3llZS5lbXBsb3llZSIsInJvbGUiOiJlbXBsb3llZSIsImRlcGFydG1lbnRfaWQiOjIsImlhdCI6MTc0OTk4Njg0NiwiZXhwIjoxNzUwMDczMjQ2fQ.VbcVkG8qUf7w2Hqk6gM_tB3eqdMsKnHwzgmhQO3F-zw",
+        "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxNSwidXNlcm5hbWUiOiJlbXBsb3llZS5lbXBsb3llZSIsInJvbGUiOiJlbXBsb3llZSIsImRlcGFydG1lbnRfaWQiOjIsImlhdCI6MTc0OTk4Njg0NiwiZXhwIjoxNzUwNTkxNjQ2fQ.k-jQ-tzSOUMdHl_5VZkLW3vLn6MBmdvgBzeZzu8DGMc",
+        "user": {
+          "user_id": 15,
+          "username": "employee.employee",
+          "email": "employee@hrms.com",
+          "first_name": "EyeAm",
+          "last_name": "Employee",
+          "role": "employee",
+          "department": {
+            "department_id": 2,
+            "name": "Marketing",
+            "code": "MKT"
+          },
+          "employment_type": "full-time",
+          "last_login": "2025-06-15T11:27:26.723Z"
+        }
+      },
+      "message": "Login successful"
+}
+
+
+# GET /api/auth/profile  [Authenticated]
+    "response": {
+        "success": true,
+        "data": {
+          "user_id": 15,
+          "username": "employee.employee",
+          "email": "employee@hrms.com",
+          "first_name": "EyeAm",
+          "last_name": "Employee",
+          "role": "employee",
+          "department_id": 2,
+          "employment_type": "full-time",
+          "salary": "30000.00",
+          "phone": "+1234567890",
+          "address": "123 Main St",
+          "is_active": true,
+          "last_login": "2025-06-15T11:30:37.000Z",
+          "user_image": "default_profile.png",
+          "gender": "male",
+          "date_of_birth": "2004-07-09",
+          "hire_date": "2025-06-15",
+          "createdAt": "2025-06-15T10:44:22.000Z",
+          "updatedAt": "2025-06-15T11:30:37.000Z",
+          "department": {
+            "department_id": 2,
+            "name": "Marketing",
+            "code": "MKT",
+            "description": "Marketing and advertising"
+          }
+        }
+      }
+
+# PUT /api/auth/profile  [Authenticated]
+    "request": {
+      "first_name": "John",
+      "last_name": "Doe",
+      "phone": "+1234567890",
+      "address": "123 Main St",
+      ...
+    }
+    "response": {
+      "success": true,
+      "data": {
+        "user_id": 15,
+        "username": "employee.employee",
+        "email": "employee@hrms.com",
+        "first_name": "youAre",
+        "last_name": "emPloyee",
+        "phone": "+1234567890",
+        "address": "123 Main St"
+      },
+      "message": "Profile updated successfully"
+    }
+
+# POST /api/auth/change-password  [Authenticated]
+    "request": {
+      "current_password": "SecurePass@123",
+      "new_password": "SecurePass@12345"
+    }
+    "response": {
+      "success": true,
+      "message": "Password changed successfully"
+    }
+
+# POST /api/auth/refresh-token
+    "request": {
+      "refresh_token": "..."
+    }
+    "response": {
+      "success": true,
+      "token": "..."
+    }
+
+# POST /api/auth/logout  [Authenticated]
+    "response": {
+      "success": true,
+      "message": "Logged out successfully"
+    }
+
+/*********************** api/users ********************/
+
+# GET /api/users/  [Admin only]
+    "response": {
+      "success": true,
+      "users": [
+        {
+          "user_id": 1,
+          "username": "jdoe",
+          "email": "jdoe@example.com",
+          "first_name": "John",
+          "last_name": "Doe",
+          "role": "admin",
+          "department_id": 1,
+          "employment_type": "full-time",
+          "salary": "80000.00",
+          "phone": "1234567890",
+          "address": "123 Main St",
+          "is_active": true,
+          "last_login": "2025-06-10T04:23:02.000Z",
+          "user_image": "default_profile.png",
+          "gender": "male",
+          "date_of_birth": "2017-06-02",
+          "hire_date": "2025-06-10",
+          "createdAt": "2025-06-10T04:23:02.000Z",
+          "updatedAt": "2025-06-15T10:33:53.000Z",
+          "department": {
+            "department_id": 1,
+            "name": "Engineering",
+            "code": "ENG",
+            "description": "Handles all engineering tasks",
+            "manager_id": 1,
+            "budget": "50000.00",
+            "location": "Block A",
+            "is_active": true,
+            "createdAt": "2025-06-10T04:23:02.000Z",
+            "updatedAt": "2025-06-10T04:23:02.000Z"
+          }
+        },
+        ...
+      ]
+    }
+
+# GET /api/users/:id  [Authenticated]
+    "response": {
+      "success": true,
+      "user": {
+        "user_id": 2,
+        "username": "asmith",
+        "email": "asmith@example.com",
+        "first_name": "Alice",
+        "last_name": "Smith",
+        "role": "hr",
+        "department_id": 4,
+        "employment_type": "full-time",
+        "salary": "60000.00",
+        "phone": "1234567891",
+        "address": "456 Oak St",
+        "is_active": true,
+        "last_login": "2025-06-10T04:23:02.000Z",
+        "user_image": "default_profile.png",
+        "gender": "female",
+        "date_of_birth": "2017-06-02",
+        "hire_date": "2025-06-10",
+        "createdAt": "2025-06-10T04:23:02.000Z",
+        "updatedAt": "2025-06-15T10:33:53.000Z",
+        "department": {
+          "department_id": 4,
+          "name": "HR",
+          "code": "HR",
+          "description": "Human Resources",
+          "manager_id": 2,
+          "budget": "25000.00",
+          "location": "Block D",
+          "is_active": true,
+          "createdAt": "2025-06-10T04:23:02.000Z",
+          "updatedAt": "2025-06-10T04:23:02.000Z"
+        }
+      }
+    }
+
+# PUT /api/users/:id  [Admin only]
+    "request": {
+      "first_name": "John",
+      "last_name": "Doe",
+      "role": "manager",
+      "department_id": 2,
+      "employment_type": "full-time",
+      "salary": 60000,
+      "phone": "+1234567890",
+      "address": "456 New St",
+      "is_active": true
+    }
+    "response": {
+      "success": true,
+      "user": { ...updated user fields... }
+    }
+
+# PATCH /api/users/:id/deactivate  [Admin only]
+    "response": {
+      "success": true,
+      "message": "User deactivated"
+    }
+
+# DELETE /api/users/:id  [Admin only]
+    "response": {
+      "success": true,
+      "message": "User deleted"
+    }
+
+/*********************** api/departments ********************/
+
+# POST /api/departments/  [Admin only]
+    "request": {
+      "name": "Engineering",
+      "code": "ENG",
+      "description": "Engineering department",
+      "manager_id": 101,
+      "budget": 100000,
+      "location": "HQ"
+    }
+    "response": {
+      "success": true,
+      "department": {
+        "department_id": 1,
+        "name": "Engineering",
+        "code": "ENG",
+        "description": "Engineering department",
+        "manager_id": 101,
+        "budget": 100000,
+        "location": "HQ"
+      }
+    }
+
+# GET /api/departments/
+    "response": {
+      "success": true,
+      "departments": [
+        {
+          "department_id": 1,
+          "name": "Engineering",
+          "code": "ENG",
+          "description": "Handles all engineering tasks",
+          "manager_id": 1,
+          "budget": "50000.00",
+          "location": "Block A",
+          "is_active": true,
+          "createdAt": "2025-06-10T04:23:02.000Z",
+          "updatedAt": "2025-06-10T04:23:02.000Z",
+          "manager": {
+            "user_id": 1,
+            "first_name": "John",
+            "last_name": "Doe"
+          }
+        },
+        ............... 
+        /* Remember Department 99 is dummy for admins */
+      ]
+    }
+
+# GET /api/departments/:id
+    "response": {
+      "success": true,
+      "department": {
+        "department_id": 1,
+        "name": "Engineering",
+        "code": "ENG",
+        "description": "Handles all engineering tasks",
+        "manager_id": 1,
+        "budget": "50000.00",
+        "location": "Block A",
+        "is_active": true,
+        "createdAt": "2025-06-10T04:23:02.000Z",
+        "updatedAt": "2025-06-10T04:23:02.000Z",
+        "manager": {
+          "user_id": 1,
+          "first_name": "John",
+          "last_name": "Doe"
+        }
+      }
+    }
+
+# PUT /api/departments/:id  [Admin only]
+    "request": {
+      "name": "Product",
+      "code": "PRD",
+      "description": "Product department",
+      "manager_id": 102,
+      "budget": 120000,
+      "location": "Branch",
+      "is_active": true
+    }
+    "response": {
+      "success": true,
+      "department": { ...updated department fields... }
+    }
+
+# DELETE /api/departments/:id  [Admin only]
+    "response": {
+      "success": true,
+      "message": "Department deleted"
+    }
+
+/*********************** api/leaves ********************/
+
+# POST /api/leaves/apply  [Employee]
+    "request": {
+      "leave_type": "annual",
+      "start_date": "2024-06-01",
+      "end_date": "2024-06-10",
+      "reason": "Family vacation"
+    }
+    "response": {
+      "success": true,
+      "leave": {
+        "leave_id": 1,
+        "user_id": 101,
+        "leave_type": "annual",
+        "start_date": "2024-06-01",
+        "end_date": "2024-06-10",
+        "reason": "Family vacation",
+        "status": "pending",
+        "year": "2024"
+      }
+    }
+
+# GET /api/leaves/  [Admin/Manager]
+    "response": {
+      "success": true,
+      "leaves": [ ...leave objects... ]
+    }
+
+# GET /api/leaves/my  [Employee]
+    "response": {
+      "success": true,
+      "leaves": [ ...leave objects... ]
+    }
+
+# POST /api/leaves/:id/approve  [Admin/Manager]
+    "response": {
+      "success": true,
+      "leave": { ...leave fields, status: "approved" ... }
+    }
+
+# POST /api/leaves/:id/reject  [Admin/Manager]
+    "request": {
+      "rejection_reason": "Not enough leave balance"
+    }
+    "response": {
+      "success": true,
+      "leave": { ...leave fields, status: "rejected" ... }
+    }
+
+# POST /api/leaves/:id/cancel  [Employee]
+    "response": {
+      "success": true,
+      "leave": { ...leave fields, status: "cancelled" ... }
+    }
+
+# GET /api/leaves/:id
+    "response": {
+      "success": true,
+      "leave": { ...leave fields... }
+    }
+
+/*********************** api/transfers ********************/
+
+# POST /api/transfers/request  [Employee]
+    "request": {
+      "to_department_id": 2,
+      "reason": "Seeking new challenges"
+    }
+    "response": {
+      "success": true,
+      "transfer": {
+        "transfer_id": 1,
+        "user_id": 101,
+        "from_department_id": 1,
+        "to_department_id": 2,
+        "reason": "Seeking new challenges",
+        "status": "pending"
+      }
+    }
+
+# GET /api/transfers/  [Admin/Manager]
+    "response": {
+      "success": true,
+      "transfers": [ ...transfer objects... ]
+    }
+
+# GET /api/transfers/my  [Employee]
+    "response": {
+      "success": true,
+      "transfers": [ ...transfer objects... ]
+    }
+
+# POST /api/transfers/:id/approve  [Admin/Manager]
+    "response": {
+      "success": true,
+      "transfer": { ...transfer fields, status: "approved" ... }
+    }
+
+# POST /api/transfers/:id/reject  [Admin/Manager]
+    "request": {
+      "rejection_reason": "No open positions"
+    }
+    "response": {
+      "success": true,
+      "transfer": { ...transfer fields, status: "rejected" ... }
+    }
+
+# GET /api/transfers/:id
+    "response": {
+      "success": true,
+      "transfer": { ...transfer fields... }
+    }
+
+/*********************** api/notifications ********************/
+
+# GET /api/notifications/  [Authenticated]
+    "response": {
+      "success": true,
+      "notifications": [
+        {
+          "notification_id": 1,
+          "user_id": 101,
+          "type": "leave",
+          "message": "Your leave has been approved.",
+          "is_read": false,
+          "created_at": "2024-06-10T10:00:00Z"
+        }, ...
+      ]
+    }
+
+# PATCH /api/notifications/:id/read  [Authenticated]
+    "response": {
+      "success": true,
+      "notification": {
+        "notification_id": 1,
+        "is_read": true
+      }
+    }
+
+/*********************** api/reports ********************/
+
+# GET /api/reports/leaves  [Authenticated]
+    "response": {
+      "success": true,
+      "summary": [
+        { "status": "approved", "count": 10 },
+        { "status": "pending", "count": 5 },
+        ...
+      ]
+    }
+
+# GET /api/reports/transfers  [Authenticated]
+    "response": {
+      "success": true,
+      "summary": [
+        { "status": "approved", "count": 3 },
+        { "status": "pending", "count": 2 },
+        ...
+      ]
+    }
+
+# GET /api/reports/users-by-department  [Authenticated]
+    "response": {
+      "success": true,
+      "summary": [
+        { "department_id": 1, "count": 5, "department": { "name": "Engineering" } },
+        ...
+      ]
+    }
+
+/*********************** HEALTH CHECK ********************/
+
+# GET /health
+    "response": {
+      "success": true,
+      "status": "OK",
+      "timestamp": "2025-06-14T12:00:00.000Z"
+    }
+
+// ...end of documentation...

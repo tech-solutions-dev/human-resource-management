@@ -1,4 +1,5 @@
 const { Transfer, User, Department } = require('../config/database');
+const { createNotification } = require('./notificationController');
 
 // Request transfer
 const requestTransfer = async (req, res) => {
@@ -6,6 +7,14 @@ const requestTransfer = async (req, res) => {
     const { to_department_id, reason } = req.body;
     const user = req.user;
     const transfer = await Transfer.create({ user_id: user.user_id, from_department_id: user.department_id, to_department_id, reason });
+    // Create notification for admin
+    await createNotification({
+      user_id: user.user_id, // You may want to target all admins, or loop through admin users
+      type: 'apply_transfer',
+      message: `New transfer request from ${user.first_name} ${user.last_name}`,
+      related_resource_id: transfer.transfer_id,
+      resource_type: 'transfer'
+    });
     res.status(201).json({ success: true, transfer });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -46,6 +55,14 @@ const approveTransfer = async (req, res) => {
     const user = await User.findByPk(transfer.user_id);
     user.department_id = transfer.to_department_id;
     await user.save();
+    // Notify employee
+    await createNotification({
+      user_id: transfer.user_id,
+      type: 'approve_transfer',
+      message: `Your transfer request has been approved`,
+      related_resource_id: transfer.transfer_id,
+      resource_type: 'transfer'
+    });
     res.json({ success: true, transfer });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -62,6 +79,14 @@ const rejectTransfer = async (req, res) => {
     transfer.approved_by = req.user.user_id;
     transfer.rejection_reason = req.body.rejection_reason || '';
     await transfer.save();
+    // Notify employee
+    await createNotification({
+      user_id: transfer.user_id,
+      type: 'reject_transfer',
+      message: `Your transfer request has been rejected`,
+      related_resource_id: transfer.transfer_id,
+      resource_type: 'transfer'
+    });
     res.json({ success: true, transfer });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

@@ -12,7 +12,16 @@ module.exports = (sequelize) => {
       allowNull: false
     },
     type: {
-      type: DataTypes.ENUM('leave', 'transfer', 'user', 'other'),
+      type: DataTypes.ENUM(
+        'apply_leave',
+        'approve_leave',
+        'reject_leave',
+        'apply_transfer',
+        'approve_transfer',
+        'reject_transfer',
+        'user',
+        'other'
+      ),
       allowNull: false
     },
     message: {

@@ -28,7 +28,7 @@ const updateUser = async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).json({ success: false, message: 'Forbidden' });
     const user = await User.findByPk(req.params.id);
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
-    const { first_name, last_name, role, department_id, employment_type, salary, phone, address, is_active } = req.body;
+    const { first_name, last_name, role, department_id, employment_type, salary, phone, address, is_active,user_image,gender,date_of_birth } = req.body;
     user.first_name = first_name || user.first_name;
     user.last_name = last_name || user.last_name;
     user.role = role || user.role;
@@ -37,6 +37,9 @@ const updateUser = async (req, res) => {
     user.salary = salary || user.salary;
     user.phone = phone || user.phone;
     user.address = address || user.address;
+    user.user_image = user_image || user.user_image;
+    user.gender = gender || user.gender;
+    user.date_of_birth = date_of_birth || user.date_of_birth;
     user.is_active = typeof is_active === 'boolean' ? is_active : user.is_active;
     await user.save();
     res.json({ success: true, user });

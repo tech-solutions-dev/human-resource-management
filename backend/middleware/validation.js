@@ -59,6 +59,11 @@ const validateUserRegistration = [
     .optional()
     .isIn(['admin', 'hr', 'manager', 'employee'])
     .withMessage('Role must be one of: admin, hr, manager, employee'),
+ 
+    body('gender')
+    .optional()
+    .isIn(['male','female','other'])
+    .withMessage('Gender must be one of: male, female, other'),
   
   body('department_id')
     .optional()
@@ -87,12 +92,19 @@ const validateUserLogin = [
   body('username')
     .trim()
     .notEmpty()
-    .withMessage('Username or email is required'),
-  
+    .withMessage('Username or email is required')
+    .custom(value => {
+      // Accept either a valid email or a valid username
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const usernameRegex = /^[a-zA-Z0-9._-]{3,50}$/;
+      if (!emailRegex.test(value) && !usernameRegex.test(value)) {
+        throw new Error('Must be a valid email or username (3-50 chars, letters, numbers, dots, underscores, hyphens)');
+      }
+      return true;
+    }),
   body('password')
     .notEmpty()
     .withMessage('Password is required'),
-  
   handleValidationErrors
 ];
 
