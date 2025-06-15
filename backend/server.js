@@ -62,7 +62,7 @@ app.get('/health', (req, res) => {
 });
 
 // Sync DB and start server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 (async () => {
   try {
     await sequelize.sync();
