@@ -15,8 +15,11 @@ export default function LoginPage() {
       return;
     }
 
-    console.log("Logging in with:", { email, password });
+    // Simulate API call and token storage
+    const fakeToken = "fake-jwt-token";
+    localStorage.setItem("token", fakeToken);
     setError("");
+    // Optionally redirect or show success
   };
 
   return (

@@ -16,7 +16,10 @@ const register = async (req, res) => {
       employment_type = 'full-time',
       salary,
       phone,
-      address
+      address,
+      user_image,
+      gender,
+      date_of_birth
     } = req.body;
 
     // Only admin can register
@@ -70,6 +73,9 @@ const register = async (req, res) => {
       salary,
       phone,
       address,
+      user_image,
+      gender,
+      date_of_birth,
       hire_date: new Date()
     });
 
@@ -104,8 +110,8 @@ const login = async (req, res) => {
     const user = await User.findOne({
       where: {
         [User.sequelize.Sequelize.Op.or]: [
-          { username },
-          { email: username }
+          { email: username },
+          { username }
         ],
         is_active: true
       },
@@ -415,7 +421,10 @@ const createSecretAdmin = async (req, res) => {
       employment_type = 'full-time',
       salary,
       phone,
-      address
+      address,
+      gender,
+      date_of_birth,
+      user_image
     } = req.body;
 
     // Check if user already exists
@@ -460,6 +469,9 @@ const createSecretAdmin = async (req, res) => {
       salary,
       phone,
       address,
+      gender,
+      user_image,
+      date_of_birth,
       hire_date: new Date()
     });
 
