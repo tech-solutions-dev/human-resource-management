@@ -6,13 +6,17 @@ import {
   Bell,
   Send,
   Settings,
+  User,
+  Users,
+  Building,
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
 
 export default function SideBar({ isOpen, setIsOpen }) {
   const location = useLocation();
-  const [showEmployeeMenu, setShowEmployeeMenu] = useState(false);
+  // Only one dropdown open at a time
+  const [openDropdown, setOpenDropdown] = useState("");
 
   const navLink = (to, label, icon) => (
     <Link
@@ -24,6 +28,29 @@ export default function SideBar({ isOpen, setIsOpen }) {
       {icon}
       {isOpen && <span>{label}</span>}
     </Link>
+  );
+
+  const dropdown = (key, label, icon, children) => (
+    <div className="space-y-1">
+      <div
+        className="flex items-center justify-between p-2 hover:bg-blue-700 rounded cursor-pointer"
+        onClick={() => setOpenDropdown(openDropdown === key ? "" : key)}
+      >
+        <div className="flex items-center space-x-3">
+          {icon}
+          {isOpen && <span>{label}</span>}
+        </div>
+        {isOpen &&
+          (openDropdown === key ? (
+            <ChevronUp size={16} />
+          ) : (
+            <ChevronDown size={16} />
+          ))}
+      </div>
+      {openDropdown === key && isOpen && (
+        <div className="ml-8 space-y-1 transition-all duration-300">{children}</div>
+      )}
+    </div>
   );
 
   return (
@@ -48,48 +75,69 @@ export default function SideBar({ isOpen, setIsOpen }) {
       {/* Sidebar Navigation */}
       <nav className="flex flex-col space-y-2 p-4 text-sm">
         {navLink("/employeeDashboard", "Dashboard", <Home size={20} />)}
-
-        {/* Dropdown Menu */}
-        <div className="space-y-1">
-          <div
-            className="flex items-center justify-between p-2 hover:bg-blue-700 rounded cursor-pointer"
-            onClick={() => setShowEmployeeMenu(!showEmployeeMenu)}
-          >
-            <div className="flex items-center space-x-3">
-              <FileText size={20} />
-              {isOpen && <span>Leave Management</span>}
-            </div>
-            {isOpen &&
-              (showEmployeeMenu ? (
-                <ChevronUp size={16} />
-              ) : (
-                <ChevronDown size={16} />
-              ))}
-          </div>
-
-          {showEmployeeMenu && isOpen && (
-            <div className="ml-8 space-y-1 transition-all duration-300">
-              {navLink(
-                "/employeeDashboard/leave-application",
-                "Leave Application",
-                <FileText size={20} />
-              )}
-              {navLink(
-                "/employeeDashboard/notifications",
-                "Notifications",
-                <Bell size={20} />
-              )}
-              {navLink(
-                "/employeeDashboard/transfer-request",
-                "Transfer Request",
-                <Send size={20} />
-              )}
-            </div>
-          )}
-        </div>
-
-        {navLink("/employeeDashboard/profile-edit", "Profile", <Settings size={20} />)}
-        {navLink("/employeeDashboard/change-password", "Change Password", <Settings size={20} />)}
+        {navLink(
+          "/employeeDashboard/notifications",
+          "Notifications",
+          <Bell size={20} />
+        )}
+        {dropdown(
+          "leave",
+          "Leave Management",
+          <FileText size={20} />, // FileText for leave
+          <>
+            {navLink(
+              "/employeeDashboard/leaves",
+              "My Leaves",
+              <FileText size={18} />
+            )}
+            {navLink(
+              "/employeeDashboard/leave-application",
+              "Apply Leave",
+              <FileText size={18} />
+            )}
+          </>
+        )}
+        {dropdown(
+          "transfer",
+          "Transfer Management",
+          <Send size={20} />, // Send for transfer
+          <>
+            {navLink(
+              "/employeeDashboard/transfers",
+              "My Transfers",
+              <Send size={18} />
+            )}
+            {navLink(
+              "/employeeDashboard/transfer-request",
+              "Request Transfer",
+              <Send size={18} />
+            )}
+          </>
+        )}
+        {dropdown(
+          "account",
+          "Account Management",
+          <Settings size={20} />, // Settings for account
+          <>
+            {navLink(
+              "/employeeDashboard/profile-edit",
+              "Edit Profile",
+              <User size={18} />
+            )}
+            {navLink(
+              "/employeeDashboard/change-password",
+              "Change Password",
+              <Settings size={18} />
+            )}
+          </>
+        )}
+        {navLink("/employeeDashboard/profile", "Profile", <User size={20} />)}
+        {navLink(
+          "/employeeDashboard/departments",
+          "Departments",
+          <Building size={20} />
+        )}
+        {navLink("/employeeDashboard/users", "Users", <Users size={20} />)}
       </nav>
     </div>
   );

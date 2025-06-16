@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import EmployeeLayout from "../../layouts/EmployeeLayout";
 
 function LeaveApplication() {
   const [form, setForm] = useState({
@@ -23,7 +22,7 @@ function LeaveApplication() {
   };
 
   return (
-    <EmployeeLayout>
+    <>
       <div className="max-w-lg mx-auto bg-white p-8 rounded-xl shadow mt-10">
         <h2 className="text-2xl font-bold mb-6 text-gray-800">Leave Application</h2>
         {submitted && (
@@ -86,7 +85,7 @@ function LeaveApplication() {
         </form>
         {/* TODO: Integrate with real API */}
       </div>
-    </EmployeeLayout>
+    </>
   );
 }
 

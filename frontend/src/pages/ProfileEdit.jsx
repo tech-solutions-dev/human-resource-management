@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import AdminLayout from "../layouts/AdminLayout";
 
 // Dummy user profile data (matches GET /api/auth/profile response)
 const dummyProfile = {
@@ -39,7 +38,7 @@ function ProfileEdit() {
   };
 
   return (
-    <AdminLayout>
+    <>
       <div className="max-w-lg mx-auto bg-white p-8 rounded-xl shadow mt-10">
         <h2 className="text-2xl font-bold mb-6 text-gray-800">Edit Profile</h2>
         {submitted && (
@@ -101,7 +100,7 @@ function ProfileEdit() {
         </form>
         {/* TODO: Integrate with real API */}
       </div>
-    </AdminLayout>
+    </>
   );
 }
 

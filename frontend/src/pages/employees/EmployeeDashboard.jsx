@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import EmployeeLayout from "../../layouts/EmployeeLayout";
 
 // Dummy leave data (matches GET /api/leaves/my response)
 const dummyLeaves = [
@@ -27,7 +26,7 @@ function EmployeeDashboard() {
   const [leaves] = useState(dummyLeaves);
 
   return (
-    <EmployeeLayout>
+    <>
       {/* Content */}
         <h1 className="text-3xl font-bold text-gray-800 mb-4">Employee Dashboard</h1>
         {/* Example: Grid cards */}
@@ -64,7 +63,7 @@ function EmployeeDashboard() {
             </table>
           </div>
         </div>
-    </EmployeeLayout>
+    </>
   );
 }
 

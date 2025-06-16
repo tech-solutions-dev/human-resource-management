@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import EmployeeLayout from "../../layouts/EmployeeLayout";
 
 const dummyNotifications = [
   {
@@ -24,7 +23,7 @@ function Notifications() {
   const [notifications] = useState(dummyNotifications);
 
   return (
-    <EmployeeLayout>
+    <>
       <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow mt-10">
         <h2 className="text-2xl font-bold mb-6 text-gray-800">Notifications</h2>
         <ul className="space-y-4">
@@ -44,7 +43,7 @@ function Notifications() {
         </ul>
         {/* TODO: Integrate with real API */}
       </div>
-    </EmployeeLayout>
+    </>
   );
 }
 

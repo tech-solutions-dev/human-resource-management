@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import SideBar from "../components/employees/dashboard/SideBar";
 import Navbar from "../components/employees/dashboard/Navbar";
+import { Outlet } from "react-router-dom";
 
-const EmployeeLayout = ({ children }) => {
+const EmployeeLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   return (
     <div className="flex h-screen overflow-hidden">
@@ -19,7 +20,7 @@ const EmployeeLayout = ({ children }) => {
         {/* Navbar */}
         <Navbar />
         {/* Content */}
-        <main className="flex-1 bg-gray-50 p-6 overflow-y-auto">{children}</main>
+        <main className="flex-1 bg-gray-50 p-6 overflow-y-auto"><Outlet /></main>
       </div>
     </div>
   );

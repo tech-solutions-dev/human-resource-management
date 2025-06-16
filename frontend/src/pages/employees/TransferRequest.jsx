@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import EmployeeLayout from "../../layouts/EmployeeLayout";
 
 function TransferRequest() {
   const [form, setForm] = useState({
@@ -28,7 +27,7 @@ function TransferRequest() {
   };
 
   return (
-    <EmployeeLayout>
+    <>
       <div className="max-w-lg mx-auto bg-white p-8 rounded-xl shadow mt-10">
         <h2 className="text-2xl font-bold mb-6 text-gray-800">Transfer Request</h2>
         {submitted && (
@@ -71,7 +70,7 @@ function TransferRequest() {
         </form>
         {/* TODO: Integrate with real API */}
       </div>
-    </EmployeeLayout>
+    </>
   );
 }
 

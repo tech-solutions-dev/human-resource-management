@@ -1,9 +1,7 @@
-import React from "react";
-import AdminLayout from "../../layouts/AdminLayout";
 
 function Dashboard() {
   return (
-    <AdminLayout>
+    <>
       <h1 className="text-3xl font-bold text-gray-800 mb-4">Dashboard</h1>
       <p className="text-gray-600">
         Welcome to the HRM System Dashboard. Here you can manage employees,
@@ -16,7 +14,7 @@ function Dashboard() {
         <Card title="On Leave" count="8" />
         <Card title="Pending Requests" count="4" />
       </div>
-    </AdminLayout>
+    </>
   );
 }
 

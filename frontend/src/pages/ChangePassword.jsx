@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import AdminLayout from "../layouts/AdminLayout";
 
 function ChangePassword() {
   const [form, setForm] = useState({
@@ -21,7 +20,7 @@ function ChangePassword() {
   };
 
   return (
-    <AdminLayout>
+    <>
       <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow mt-10">
         <h2 className="text-2xl font-bold mb-6 text-gray-800">Change Password</h2>
         {submitted && (
@@ -61,7 +60,7 @@ function ChangePassword() {
         </form>
         {/* TODO: Integrate with real API */}
       </div>
-    </AdminLayout>
+    </>
   );
 }
 
