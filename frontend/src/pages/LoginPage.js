@@ -1,22 +1,61 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
-      setError("Email and password are required.");
+    const { username, password } = formData;
+    if (!username || !password) {
+      setError("User and password are required.");
       return;
     }
+    try {
+      const response = await axios.post(
+        "http://localhost:3001/api/auth/login",
+        formData
+      );
+      const { success, message, data } = response.data;
+      if (!success) {
+        setError(message || "Login failed. Please try again.");
+        return;
+      }
+      const { token, user } = data;
 
-    console.log("Logging in with:", { email, password });
-    setError("");
+      localStorage.setItem("department_id", user.department.department_id);
+      localStorage.setItem("token", token);
+      if (user.role === "admin") {
+        navigate("/dashboard");
+      } else if (user.role === "employee") {
+        navigate("/employeeDashboard");
+      } else {
+        setError("Invalid user role.");
+        return;
+      }
+      setError("");
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        setError("Invalid username or password.");
+      } else {
+        setError("An error occurred while logging in. Please try again.");
+      }
+      console.error("Login error:", error);
+    }
   };
 
   return (
@@ -38,10 +77,11 @@ export default function LoginPage() {
               Email
             </label>
             <input
-              type="email"
+              type="text"
+              name="username"
               className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.username}
+              onChange={handleChange}
               placeholder="you@example.com"
             />
           </div>
@@ -54,8 +94,9 @@ export default function LoginPage() {
               <input
                 type={showPassword ? "text" : "password"}
                 className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={formData.password}
+                name="password"
+                onChange={handleChange}
                 placeholder="Enter your password"
               />
               <button

@@ -1,4 +1,5 @@
 const { Leave, User } = require('../config/database');
+const { createNotification } = require('./notificationController');
 
 // Apply for leave
 const applyLeave = async (req, res) => {
@@ -6,6 +7,14 @@ const applyLeave = async (req, res) => {
     const { leave_type, start_date, end_date, reason } = req.body;
     const year = new Date(start_date).getFullYear().toString();
     const leave = await Leave.create({ user_id: req.user.user_id, leave_type, start_date, end_date, reason, year });
+    // Create notification for admin
+    await createNotification({
+      user_id: req.user.user_id, // You may want to target all admins, or loop through admin users
+      type: 'apply_leave',
+      message: `New leave application from ${req.user.first_name} ${req.user.last_name}`,
+      related_resource_id: leave.leave_id,
+      resource_type: 'leave'
+    });
     res.status(201).json({ success: true, leave });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -42,6 +51,14 @@ const approveLeave = async (req, res) => {
     leave.status = 'approved';
     leave.approved_by = req.user.user_id;
     await leave.save();
+    // Notify employee
+    await createNotification({
+      user_id: leave.user_id,
+      type: 'approve_leave',
+      message: `Your leave request has been approved`,
+      related_resource_id: leave.leave_id,
+      resource_type: 'leave'
+    });
     res.json({ success: true, leave });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -58,6 +75,14 @@ const rejectLeave = async (req, res) => {
     leave.approved_by = req.user.user_id;
     leave.rejection_reason = req.body.rejection_reason || '';
     await leave.save();
+    // Notify employee
+    await createNotification({
+      user_id: leave.user_id,
+      type: 'reject_leave',
+      message: `Your leave request has been rejected`,
+      related_resource_id: leave.leave_id,
+      resource_type: 'leave'
+    });
     res.json({ success: true, leave });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

@@ -1,14 +1,36 @@
 import React, { useState } from "react";
-import { Home, Users, Settings, ChevronDown, ChevronUp } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import {
+  Home,
+  FileText,
+  Bell,
+  Send,
+  Settings,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 
 export default function SideBar({ isOpen, setIsOpen }) {
+  const location = useLocation();
   const [showEmployeeMenu, setShowEmployeeMenu] = useState(false);
+
+  const navLink = (to, label, icon) => (
+    <Link
+      to={to}
+      className={`flex items-center space-x-3 p-2 rounded hover:bg-blue-700 transition-colors duration-200 ${
+        location.pathname === to ? "bg-blue-900 text-white" : "text-white"
+      }`}
+    >
+      {icon}
+      {isOpen && <span>{label}</span>}
+    </Link>
+  );
 
   return (
     <div
       className={`min-h-screen ${
         isOpen ? "w-64" : "w-16"
-      } bg-gray-800 text-white transition-all duration-300 flex flex-col`}
+      } bg-blue-800 text-white transition-all duration-300 flex flex-col`}
     >
       {/* Sidebar Header */}
       <div className="flex justify-between items-center p-4 border-b border-blue-700">
@@ -25,11 +47,7 @@ export default function SideBar({ isOpen, setIsOpen }) {
 
       {/* Sidebar Navigation */}
       <nav className="flex flex-col space-y-2 p-4 text-sm">
-        <SidebarLink
-          icon={<Home size={20} />}
-          text="Dashboard"
-          isOpen={isOpen}
-        />
+        {navLink("/employeeDashboard", "Dashboard", <Home size={20} />)}
 
         {/* Dropdown Menu */}
         <div className="space-y-1">
@@ -38,7 +56,7 @@ export default function SideBar({ isOpen, setIsOpen }) {
             onClick={() => setShowEmployeeMenu(!showEmployeeMenu)}
           >
             <div className="flex items-center space-x-3">
-              <Users size={20} />
+              <FileText size={20} />
               {isOpen && <span>Leave Management</span>}
             </div>
             {isOpen &&
@@ -51,39 +69,28 @@ export default function SideBar({ isOpen, setIsOpen }) {
 
           {showEmployeeMenu && isOpen && (
             <div className="ml-8 space-y-1 transition-all duration-300">
-              <DropdownLink text="Employee List" />
-              <DropdownLink text="Add Employee" />
-              <DropdownLink text="Attendance" />
+              {navLink(
+                "/employeeDashboard/leave-application",
+                "Leave Application",
+                <FileText size={20} />
+              )}
+              {navLink(
+                "/employeeDashboard/notifications",
+                "Notifications",
+                <Bell size={20} />
+              )}
+              {navLink(
+                "/employeeDashboard/transfer-request",
+                "Transfer Request",
+                <Send size={20} />
+              )}
             </div>
           )}
         </div>
 
-        <SidebarLink
-          icon={<Settings size={20} />}
-          text="Settings"
-          isOpen={isOpen}
-        />
+        {navLink("/employeeDashboard/profile-edit", "Profile", <Settings size={20} />)}
+        {navLink("/employeeDashboard/change-password", "Change Password", <Settings size={20} />)}
       </nav>
-    </div>
-  );
-}
-
-function SidebarLink({ icon, text, isOpen }) {
-  return (
-    <div
-      className="flex items-center space-x-3 p-2 hover:bg-blue-700 rounded cursor-pointer"
-      title={!isOpen ? text : undefined}
-    >
-      <span>{icon}</span>
-      {isOpen && <span>{text}</span>}
-    </div>
-  );
-}
-
-function DropdownLink({ text }) {
-  return (
-    <div className="pl-2 py-1 hover:bg-blue-600 rounded cursor-pointer">
-      {text}
     </div>
   );
 }

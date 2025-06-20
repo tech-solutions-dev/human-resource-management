@@ -1,0 +1,5 @@
+frontend/node_modules
+# Ignore node_modules in the frontend directory
+
+# Ignore build artifacts
+backend/node_modules

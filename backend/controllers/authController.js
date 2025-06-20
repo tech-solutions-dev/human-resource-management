@@ -1,6 +1,6 @@
-const { User, Department } = require('../config/database');
-const { generateToken, generateRefreshToken } = require('../config/jwt');
-const bcrypt = require('bcryptjs');
+const { User, Department } = require("../config/database");
+const { generateToken, generateRefreshToken } = require("../config/jwt");
+const bcrypt = require("bcryptjs");
 
 // Register a new user (Admin only)
 const register = async (req, res) => {
@@ -11,37 +11,37 @@ const register = async (req, res) => {
       password,
       first_name,
       last_name,
-      role = 'employee',
+      role = "employee",
       department_id,
-      employment_type = 'full-time',
+      employment_type = "full-time",
       salary,
       phone,
-      address
+      address,
+      user_image,
+      gender,
+      date_of_birth,
     } = req.body;
 
     // Only admin can register
-    if (!req.user || req.user.role !== 'admin') {
+    if (!req.user || req.user.role !== "admin") {
       return res.status(403).json({
         success: false,
-        message: 'Forbidden'
+        message: "Forbidden",
       });
     }
 
     // Check if user already exists
     const existingUser = await User.findOne({
       where: {
-        [User.sequelize.Sequelize.Op.or]: [
-          { username },
-          { email }
-        ]
-      }
+        [User.sequelize.Sequelize.Op.or]: [{ username }, { email }],
+      },
     });
 
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        error: 'Bad Request',
-        message: 'User with this username or email already exists'
+        error: "Bad Request",
+        message: "User with this username or email already exists",
       });
     }
 
@@ -51,8 +51,8 @@ const register = async (req, res) => {
       if (!department) {
         return res.status(400).json({
           success: false,
-          error: 'Bad Request',
-          message: 'Invalid department ID'
+          error: "Bad Request",
+          message: "Invalid department ID",
         });
       }
     }
@@ -70,7 +70,10 @@ const register = async (req, res) => {
       salary,
       phone,
       address,
-      hire_date: new Date()
+      user_image,
+      gender,
+      date_of_birth,
+      hire_date: new Date(),
     });
 
     res.status(201).json({
@@ -81,16 +84,16 @@ const register = async (req, res) => {
         email: user.email,
         role: user.role,
         department_id: user.department_id,
-        is_active: user.is_active
+        is_active: user.is_active,
       },
-      message: 'User registered successfully'
+      message: "User registered successfully",
     });
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error("Registration error:", error);
     res.status(500).json({
       success: false,
-      error: 'Internal Server Error',
-      message: 'Error creating user account'
+      error: "Internal Server Error",
+      message: "Error creating user account",
     });
   }
 };
@@ -103,26 +106,23 @@ const login = async (req, res) => {
     // Find user by username or email
     const user = await User.findOne({
       where: {
-        [User.sequelize.Sequelize.Op.or]: [
-          { username },
-          { email: username }
-        ],
-        is_active: true
+        [User.sequelize.Sequelize.Op.or]: [{ email: username }, { username }],
+        is_active: true,
       },
       include: [
         {
           model: Department,
-          as: 'department',
-          attributes: ['department_id', 'name', 'code']
-        }
-      ]
+          as: "department",
+          attributes: ["department_id", "name", "code"],
+        },
+      ],
     });
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        error: 'Unauthorized',
-        message: 'Invalid credentials'
+        error: "Unauthorized",
+        message: "Invalid credentials",
       });
     }
 
@@ -131,8 +131,8 @@ const login = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
-        error: 'Unauthorized',
-        message: 'Invalid credentials'
+        error: "Unauthorized",
+        message: "Invalid credentials",
       });
     }
 
@@ -145,7 +145,7 @@ const login = async (req, res) => {
       user_id: user.user_id,
       username: user.username,
       role: user.role,
-      department_id: user.department_id
+      department_id: user.department_id,
     };
 
     const token = generateToken(tokenPayload);
@@ -165,17 +165,17 @@ const login = async (req, res) => {
           role: user.role,
           department: user.department,
           employment_type: user.employment_type,
-          last_login: user.last_login
-        }
+          last_login: user.last_login,
+        },
       },
-      message: 'Login successful'
+      message: "Login successful",
     });
   } catch (error) {
-    console.error('Login error:', error);
+    console.error("Login error:", error);
     res.status(500).json({
       success: false,
-      error: 'Internal Server Error',
-      message: 'Error during login process'
+      error: "Internal Server Error",
+      message: "Error during login process",
     });
   }
 };
@@ -187,31 +187,31 @@ const getProfile = async (req, res) => {
       include: [
         {
           model: Department,
-          as: 'department',
-          attributes: ['department_id', 'name', 'code', 'description']
-        }
+          as: "department",
+          attributes: ["department_id", "name", "code", "description"],
+        },
       ],
-      attributes: { exclude: ['password'] }
+      attributes: { exclude: ["password"] },
     });
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: 'Not Found',
-        message: 'User profile not found'
+        error: "Not Found",
+        message: "User profile not found",
       });
     }
 
     res.json({
       success: true,
-      data: user
+      data: user,
     });
   } catch (error) {
-    console.error('Get profile error:', error);
+    console.error("Get profile error:", error);
     res.status(500).json({
       success: false,
-      error: 'Internal Server Error',
-      message: 'Error retrieving user profile'
+      error: "Internal Server Error",
+      message: "Error retrieving user profile",
     });
   }
 };
@@ -219,21 +219,15 @@ const getProfile = async (req, res) => {
 // Update user profile
 const updateProfile = async (req, res) => {
   try {
-    const {
-      first_name,
-      last_name,
-      email,
-      phone,
-      address
-    } = req.body;
+    const { first_name, last_name, email, phone, address } = req.body;
 
     const user = await User.findByPk(req.user.user_id);
-    
+
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: 'Not Found',
-        message: 'User not found'
+        error: "Not Found",
+        message: "User not found",
       });
     }
 
@@ -242,15 +236,15 @@ const updateProfile = async (req, res) => {
       const existingUser = await User.findOne({
         where: {
           email,
-          user_id: { [User.sequelize.Sequelize.Op.ne]: user.user_id }
-        }
+          user_id: { [User.sequelize.Sequelize.Op.ne]: user.user_id },
+        },
       });
 
       if (existingUser) {
         return res.status(400).json({
           success: false,
-          error: 'Bad Request',
-          message: 'Email address is already in use'
+          error: "Bad Request",
+          message: "Email address is already in use",
         });
       }
     }
@@ -274,16 +268,16 @@ const updateProfile = async (req, res) => {
         first_name: user.first_name,
         last_name: user.last_name,
         phone: user.phone,
-        address: user.address
+        address: user.address,
       },
-      message: 'Profile updated successfully'
+      message: "Profile updated successfully",
     });
   } catch (error) {
-    console.error('Update profile error:', error);
+    console.error("Update profile error:", error);
     res.status(500).json({
       success: false,
-      error: 'Internal Server Error',
-      message: 'Error updating user profile'
+      error: "Internal Server Error",
+      message: "Error updating user profile",
     });
   }
 };
@@ -294,22 +288,24 @@ const changePassword = async (req, res) => {
     const { current_password, new_password } = req.body;
 
     const user = await User.findByPk(req.user.user_id);
-    
+
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: 'Not Found',
-        message: 'User not found'
+        error: "Not Found",
+        message: "User not found",
       });
     }
 
     // Validate current password
-    const isCurrentPasswordValid = await user.validatePassword(current_password);
+    const isCurrentPasswordValid = await user.validatePassword(
+      current_password
+    );
     if (!isCurrentPasswordValid) {
       return res.status(400).json({
         success: false,
-        error: 'Bad Request',
-        message: 'Current password is incorrect'
+        error: "Bad Request",
+        message: "Current password is incorrect",
       });
     }
 
@@ -319,14 +315,14 @@ const changePassword = async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Password changed successfully'
+      message: "Password changed successfully",
     });
   } catch (error) {
-    console.error('Change password error:', error);
+    console.error("Change password error:", error);
     res.status(500).json({
       success: false,
-      error: 'Internal Server Error',
-      message: 'Error changing password'
+      error: "Internal Server Error",
+      message: "Error changing password",
     });
   }
 };
@@ -339,20 +335,20 @@ const refreshToken = async (req, res) => {
     if (!refresh_token) {
       return res.status(400).json({
         success: false,
-        error: 'Bad Request',
-        message: 'Refresh token is required'
+        error: "Bad Request",
+        message: "Refresh token is required",
       });
     }
 
-    const { verifyToken } = require('../config/jwt');
+    const { verifyToken } = require("../config/jwt");
     const decoded = verifyToken(refresh_token);
 
     const user = await User.findByPk(decoded.user_id);
     if (!user || !user.is_active) {
       return res.status(401).json({
         success: false,
-        error: 'Unauthorized',
-        message: 'Invalid refresh token'
+        error: "Unauthorized",
+        message: "Invalid refresh token",
       });
     }
 
@@ -360,7 +356,7 @@ const refreshToken = async (req, res) => {
       user_id: user.user_id,
       username: user.username,
       role: user.role,
-      department_id: user.department_id
+      department_id: user.department_id,
     };
 
     const newToken = generateToken(tokenPayload);
@@ -370,15 +366,15 @@ const refreshToken = async (req, res) => {
       success: true,
       data: {
         token: newToken,
-        refresh_token: newRefreshToken
-      }
+        refresh_token: newRefreshToken,
+      },
     });
   } catch (error) {
-    console.error('Refresh token error:', error);
+    console.error("Refresh token error:", error);
     res.status(401).json({
       success: false,
-      error: 'Unauthorized',
-      message: 'Invalid or expired refresh token'
+      error: "Unauthorized",
+      message: "Invalid or expired refresh token",
     });
   }
 };
@@ -390,14 +386,14 @@ const logout = async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Logged out successfully'
+      message: "Logged out successfully",
     });
   } catch (error) {
-    console.error('Logout error:', error);
+    console.error("Logout error:", error);
     res.status(500).json({
       success: false,
-      error: 'Internal Server Error',
-      message: 'Error logging out'
+      error: "Internal Server Error",
+      message: "Error logging out",
     });
   }
 };
@@ -412,26 +408,26 @@ const createSecretAdmin = async (req, res) => {
       first_name,
       last_name,
       department_id,
-      employment_type = 'full-time',
+      employment_type = "full-time",
       salary,
       phone,
-      address
+      address,
+      gender,
+      date_of_birth,
+      user_image,
     } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({
       where: {
-        [User.sequelize.Sequelize.Op.or]: [
-          { username },
-          { email }
-        ]
-      }
+        [User.sequelize.Sequelize.Op.or]: [{ username }, { email }],
+      },
     });
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        error: 'Bad Request',
-        message: 'User with this username or email already exists'
+        error: "Bad Request",
+        message: "User with this username or email already exists",
       });
     }
 
@@ -441,8 +437,8 @@ const createSecretAdmin = async (req, res) => {
       if (!department) {
         return res.status(400).json({
           success: false,
-          error: 'Bad Request',
-          message: 'Invalid department ID'
+          error: "Bad Request",
+          message: "Invalid department ID",
         });
       }
     }
@@ -454,13 +450,16 @@ const createSecretAdmin = async (req, res) => {
       password,
       first_name,
       last_name,
-      role: 'admin',
+      role: "admin",
       department_id,
       employment_type,
       salary,
       phone,
       address,
-      hire_date: new Date()
+      gender,
+      user_image,
+      date_of_birth,
+      hire_date: new Date(),
     });
 
     res.status(201).json({
@@ -471,16 +470,16 @@ const createSecretAdmin = async (req, res) => {
         email: user.email,
         role: user.role,
         department_id: user.department_id,
-        is_active: user.is_active
+        is_active: user.is_active,
       },
-      message: 'Admin user created successfully'
+      message: "Admin user created successfully",
     });
   } catch (error) {
-    console.error('Secret admin creation error:', error);
+    console.error("Secret admin creation error:", error);
     res.status(500).json({
       success: false,
-      error: 'Internal Server Error',
-      message: 'Error creating admin user'
+      error: "Internal Server Error",
+      message: "Error creating admin user",
     });
   }
 };
@@ -493,5 +492,5 @@ module.exports = {
   changePassword,
   refreshToken,
   logout,
-  createSecretAdmin
+  createSecretAdmin,
 };
