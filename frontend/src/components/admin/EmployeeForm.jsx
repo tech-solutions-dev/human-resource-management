@@ -2,7 +2,6 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 
 function EmployeeForm() {
-  const department_id = localStorage.getItem("department_id");
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -10,63 +9,100 @@ function EmployeeForm() {
     first_name: "",
     last_name: "",
     role: "",
-    department_id: parseInt(department_id),
+    department_id: "",
     employment_type: "",
     salary: "",
     phone: "",
     address: "",
     user_image: null,
     gender: "",
-    date_of_birth: "", // Ensure department_id is a number
+    date_of_birth: "",
   });
 
-  const [departmentOptions, setDepartmentOptions] = useState([
-    { value: "", label: "Loading..." },
-  ]);
+  const [departmentOptions, setDepartmentOptions] = useState([]);
 
-  // Simulate fetching departments from API
+  const baseURL = process.env.REACT_APP_API_BASE_URL;
+
+  // 🔁 Fetch all departments on load
   useEffect(() => {
-    // Simulate async API call
-    setTimeout(() => {
-      const dummyDepartments = [
-        { value: "1", label: "Engineering" },
-        { value: "2", label: "HR" },
-        { value: "3", label: "IT" },
-      ];
-      setDepartmentOptions([
-        { value: "", label: "Select Department" },
-        ...dummyDepartments,
-      ]);
-    }, 1000);
+    const fetchDepartments = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/api/departments/`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        const options = response.data.departments.map((dept) => ({
+          value: dept.department_id,
+          label: dept.name,
+        }));
+
+        setDepartmentOptions([
+          { value: "", label: "Select Department" },
+          ...options,
+        ]);
+      } catch (error) {
+        console.error("Failed to fetch departments:", error);
+        setDepartmentOptions([
+          { value: "", label: "Failed to load departments" },
+        ]);
+      }
+    };
+
+    fetchDepartments();
   }, []);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
+
     if (name === "user_image") {
       setFormData({ ...formData, user_image: files[0] });
     } else {
-      setFormData({ ...formData, [name]: value });
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const response = axios.post(
-        "http://localhost:3001/api/auth/register",
+      const response = await axios.post(
+        `${baseURL}/api/auth/register`,
         formData,
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
+
       const { success, message } = response.data;
       if (success) {
         alert(message || "Employee added successfully");
-        return;
       }
+      setFormData({
+        username: "",
+        email: "",
+        password: "",
+        first_name: "",
+        last_name: "",
+        role: "",
+        department_id: "",
+        employment_type: "",
+        salary: "",
+        phone: "",
+        address: "",
+        user_image: null,
+        gender: "",
+        date_of_birth: "",
+      });
     } catch (error) {
-      console.error("Error adding employee:", error);
-      alert("Failed to add employee. Please try again.");
+      const errMsg =
+        error.response?.data?.message ||
+        "Failed to add employee. Please try again.";
+      alert(errMsg);
     }
   };
 

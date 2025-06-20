@@ -17,11 +17,10 @@ const register = async (req, res) => {
       salary,
       phone,
       address,
-      user_image,
       gender,
       date_of_birth,
     } = req.body;
-
+    const user_image = req.file ? `upload/${req.file.filename}` : null;
     // Only admin can register
     if (!req.user || req.user.role !== "admin") {
       return res.status(403).json({

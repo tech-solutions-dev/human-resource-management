@@ -57,6 +57,8 @@ app.use("/api/reports", reportRoutes);
 
 // Error handler
 app.use(errorHandler);
+// Static file serving for uploads
+app.use("/upload", express.static("uploads"));
 
 // Health check endpoint
 app.get("/health", (req, res) => {
