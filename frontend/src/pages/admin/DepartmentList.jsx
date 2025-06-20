@@ -19,20 +19,7 @@ function DepartmentList() {
     { value: "", label: "Loading..." },
   ]);
 
-  // Simulate fetching managers from API
-  useEffect(() => {
-    setTimeout(() => {
-      const dummyManagers = [
-        { value: "101", label: "John Doe" },
-        { value: "102", label: "Jane Smith" },
-        { value: "103", label: "Alice Johnson" },
-      ];
-      setManagerOptions([
-        { value: "", label: "Select Manager" },
-        ...dummyManagers,
-      ]);
-    }, 1000);
-  }, []);
+  const baseURL = process.env.REACT_APP_API_BASE_URL;
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -74,13 +61,18 @@ function DepartmentList() {
 
   return (
     <AdminLayout>
+      {/* Top section with button aligned right */}
+      <div className="flex justify-end items-center mt-2 mb-0">
+        <button
+          className="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800"
+          onClick={() => setIsModalOpen(true)}
+        >
+          Add Department
+        </button>
+      </div>
+
+      {/* Department table below */}
       <DepartmentData />
-      <button
-        className="mt-6 bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800"
-        onClick={() => setIsModalOpen(true)}
-      >
-        Add Department
-      </button>
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">

@@ -47,7 +47,7 @@ export default function SideBar({ isOpen, setIsOpen }) {
           "Departments",
           <Building size={20} />
         )}
-        {navLink("/dashboard/profile-edit", "Profile", <Settings size={20} />)}
+        {navLink(`/dashboard/profile-edit`, "Profile", <Settings size={20} />)}
         {navLink(
           "/dashboard/change-password",
           "Change Password",

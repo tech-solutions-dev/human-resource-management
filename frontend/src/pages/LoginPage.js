@@ -37,8 +37,16 @@ export default function LoginPage() {
       }
       const { token, user } = data;
 
-      localStorage.setItem("department_id", user.department.department_id);
+      if (user?.user_id) {
+        localStorage.setItem("user_id", user.user_id);
+      } else {
+        console.warn("No user ID found in user object.");
+      }
+
       localStorage.setItem("token", token);
+
+      localStorage.setItem("token", token);
+
       if (user.role === "admin") {
         navigate("/dashboard");
       } else if (user.role === "employee") {
